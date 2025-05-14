@@ -3,6 +3,7 @@ from os import environ
 
 from websocket_chat.adapters.database.config import DatabaseConfig
 from websocket_chat.adapters.jwt_token_manager import JWTConfig
+from websocket_chat.adapters.redis_refresh_token_storage import RedisConfig
 from websocket_chat.application.logging import LoggingConfig
 
 
@@ -28,3 +29,4 @@ class Config:
     log: LoggingConfig = field(default_factory=LoggingConfig)
     db: DatabaseConfig = field(default_factory=DatabaseConfig)
     jwt: JWTConfig = field(default_factory=JWTConfig)
+    redis: RedisConfig = field(default_factory=RedisConfig)

@@ -78,6 +78,7 @@ class WebService:
                 database_config=self.config.db,
                 jwt_config=self.config.jwt,
                 debug=self.config.app.debug,
+                redis_config=self.config.redis,
             ),
             DomainProvider(),
         )

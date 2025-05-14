@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 
 from dishka import AnyOf, BaseScope, Component, Provider, Scope, provide
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from websocket_chat.adapters.database.config import DatabaseConfig
@@ -11,7 +12,12 @@ from websocket_chat.adapters.database.uow import SqlalchemyUow
 from websocket_chat.adapters.database.utils import create_engine, create_sessionmaker
 from websocket_chat.adapters.jwt_token_manager import JWTConfig, JWTTokenManager
 from websocket_chat.adapters.password_manager import PasswordManager
+from websocket_chat.adapters.redis_refresh_token_storage import (
+    RedisConfig,
+    RedisRefreshTokenStorage,
+)
 from websocket_chat.domain.interfaces.password_manager import IPasswordManager
+from websocket_chat.domain.interfaces.refresh_token_storage import IRefreshTokenStorage
 from websocket_chat.domain.interfaces.token_manager import ITokenManager
 from websocket_chat.domain.interfaces.user_repository import IUserRepository
 from websocket_chat.domain.uow import AbstractUow
@@ -22,6 +28,7 @@ class AdaptersProvider(Provider):
         self,
         database_config: DatabaseConfig,
         jwt_config: JWTConfig,
+        redis_config: RedisConfig,
         debug: bool = False,
         scope: BaseScope | None = None,
         component: Component | None = None,
@@ -29,6 +36,7 @@ class AdaptersProvider(Provider):
         super().__init__(scope, component)
         self.__database_config = database_config
         self.__jwt_config = jwt_config
+        self.__redis_config = redis_config
         self.__debug = debug
 
     @provide(scope=Scope.APP)
@@ -42,6 +50,19 @@ class AdaptersProvider(Provider):
             algorithm=self.__jwt_config.algorithm,
             access_token_expires_seconds=self.__jwt_config.access_token_expires_seconds,
             refresh_token_expires_seconds=self.__jwt_config.refresh_token_expires_seconds,
+        )
+
+    @provide(scope=Scope.APP)
+    async def redis(self) -> AsyncIterator[Redis]:
+        redis = Redis.from_url(self.__redis_config.redis_dsn)
+        yield redis
+        await redis.aclose(close_connection_pool=True)
+
+    @provide(scope=Scope.APP)
+    def redis_refresh_token_storage(self, redis: Redis) -> IRefreshTokenStorage:
+        return RedisRefreshTokenStorage(
+            redis=redis,
+            ttl=self.__jwt_config.refresh_token_expires_seconds,
         )
 
     @provide(scope=Scope.APP)
