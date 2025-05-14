@@ -1,0 +1,40 @@
+from http import HTTPStatus
+
+from dishka import FromDishka
+from dishka.integrations.fastapi import DishkaRoute
+from fastapi import APIRouter
+
+from websocket_chat.domain.entities.user import UserRegister
+from websocket_chat.domain.use_cases.register_user import (
+    RegisterUserUseCase,
+)
+from websocket_chat.presentors.web.routers.api.v1.auth.models import (
+    TokenPairModel,
+    UserRegisterModel,
+)
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["auth"],
+    route_class=DishkaRoute,
+)
+
+
+@router.post(
+    "/register",
+    response_model=TokenPairModel,
+    status_code=HTTPStatus.CREATED,
+)
+async def register(
+    register_user: FromDishka[RegisterUserUseCase],
+    payload: UserRegisterModel,
+) -> TokenPairModel:
+    token_pair = await register_user.execute(
+        input_dto=UserRegister(
+            name=payload.name,
+            email=payload.email,
+            password=payload.password,
+            device_id=payload.device_id,
+        ),
+    )
+    return TokenPairModel.model_validate(token_pair)

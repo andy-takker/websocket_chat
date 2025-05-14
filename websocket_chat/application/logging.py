@@ -48,10 +48,11 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO, use_json: bool = False) -
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     root_logger = logging.getLogger()
+    root_logger.handlers.clear()
     root_logger.addHandler(handler)
     root_logger.setLevel(log_level.upper())
 
-    for _log in ["uvicorn", "uvicorn.error", "faststream"]:
+    for _log in ["uvicorn", "uvicorn.error", "faststream", "pytest"]:
         logging.getLogger(_log).handlers.clear()
         logging.getLogger(_log).propagate = True
 
