@@ -1,0 +1,9 @@
+services:
+  database:
+    image: postgres:16
+    ports:
+      - "${APP_DATABASE_PORT}:5432"
+    environment:
+      - POSTGRES_DB=$APP_DATABASE_NAME
+      - POSTGRES_USER=$APP_DATABASE_USER
+      - POSTGRES_PASSWORD=$APP_DATABASE_PASSWORD
