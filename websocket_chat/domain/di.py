@@ -11,6 +11,7 @@ from websocket_chat.domain.interfaces.refresh_token_storage import IRefreshToken
 from websocket_chat.domain.interfaces.token_manager import ITokenManager
 from websocket_chat.domain.interfaces.user_repository import IUserRepository
 from websocket_chat.domain.uow import AbstractUow
+from websocket_chat.domain.use_cases.chat_authorize import ChatAuthorizeUseCase
 from websocket_chat.domain.use_cases.fetch_chat_history import FetchChatHistoryUseCase
 from websocket_chat.domain.use_cases.login_user import LoginUserUseCase
 from websocket_chat.domain.use_cases.refesh_token import RefreshTokenUseCase
@@ -82,4 +83,17 @@ class DomainProvider(Provider):
             token_manager=token_manager,
             user_repository=user_repository,
             chat_participant_repository=chat_participant_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    def chat_authorize(
+        self,
+        token_manager: ITokenManager,
+        uow: AbstractUow,
+        user_repository: IUserRepository,
+    ) -> ChatAuthorizeUseCase:
+        return ChatAuthorizeUseCase(
+            uow=uow,
+            token_manager=token_manager,
+            user_repository=user_repository,
         )

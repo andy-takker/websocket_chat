@@ -19,6 +19,11 @@ class User:
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
+class DevicedUser(User):
+    device_id: UUID
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class LoginUser:
     email: str
     password: str

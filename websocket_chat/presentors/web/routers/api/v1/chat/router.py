@@ -14,7 +14,15 @@ from websocket_chat.presentors.web.security import OAUTH2_SCHEME
 router = APIRouter(prefix="/chat", tags=["chat"], route_class=DishkaRoute)
 
 
-@router.get("/history/{chat_id}")
+@router.get(
+    "/history/{chat_id}",
+    response_model=ChatHistoryResponseModel,
+    name="Fetch chat history by chat id",
+    description=(
+        "Fetch chat history by chat id. "
+        "You need to authenticate and to be a member of the chat"
+    ),
+)
 async def fetch_chat_history_by_id(
     chat_id: UUID,
     fetch_chat_history: FromDishka[FetchChatHistoryUseCase],

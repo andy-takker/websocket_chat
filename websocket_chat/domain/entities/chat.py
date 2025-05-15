@@ -23,6 +23,26 @@ class Message:
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
+class SaveMessageDTO:
+    sender_id: UUID
+    chat_id: UUID
+    text: str
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class ReadMessageDTO:
+    chat_id: UUID
+    message_id: UUID
+    user_id: UUID
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class ReadMessageResultDTO:
+    ok: bool
+    author_id: UUID
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class ChatHistory:
     chat_id: UUID
     total: int
