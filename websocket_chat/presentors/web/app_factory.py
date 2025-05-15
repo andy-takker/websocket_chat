@@ -9,12 +9,20 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI, HTTPException
 
 from websocket_chat.adapters.di import AdaptersProvider
-from websocket_chat.application.errors import WebsockerChatException
+from websocket_chat.application.errors import (
+    IncorrectCredentialsException,
+    ObjectNotFoundException,
+    UserAlreadyExistsException,
+    WebsockerChatException,
+)
 from websocket_chat.application.logging import setup_logging
 from websocket_chat.domain.di import DomainProvider
 from websocket_chat.presentors.web.config import Config
 from websocket_chat.presentors.web.exception_handlers import (
+    credentials_exception_handler,
     http_exception_handler,
+    object_not_found_exception_handler,
+    user_already_exists_exception_handler,
     websocket_chat_exception_handler,
 )
 from websocket_chat.presentors.web.routers.api.router import router as api_router
@@ -25,7 +33,11 @@ ExceptionHandlersType = tuple[tuple[type[Exception], Callable], ...]
 
 EXCEPTION_HANDLERS: Final[ExceptionHandlersType] = (
     (HTTPException, http_exception_handler),
+    (Exception, websocket_chat_exception_handler),
     (WebsockerChatException, websocket_chat_exception_handler),
+    (ObjectNotFoundException, object_not_found_exception_handler),
+    (UserAlreadyExistsException, user_already_exists_exception_handler),
+    (IncorrectCredentialsException, credentials_exception_handler),
 )
 
 

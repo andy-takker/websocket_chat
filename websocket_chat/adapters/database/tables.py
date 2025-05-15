@@ -18,7 +18,7 @@ class UserTable(BaseTable, TimestampedMixin, IdentifableMixin):
 
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
 
 
 class DeviceTable(BaseTable, TimestampedMixin, IdentifableMixin):
@@ -27,12 +27,16 @@ class DeviceTable(BaseTable, TimestampedMixin, IdentifableMixin):
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    user_agent: Mapped[str | None] = mapped_column(String(255))
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    push_token: Mapped[str | None] = mapped_column(String(255))
+    user_agent: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, default=None
+    )
+    push_token: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, default=None
+    )
 
 
-class ChatTalbe(BaseTable, TimestampedMixin, IdentifableMixin):
+class ChatTable(BaseTable, TimestampedMixin, IdentifableMixin):
     __tablename__ = "chats"
 
     title: Mapped[str | None] = mapped_column(String(255))

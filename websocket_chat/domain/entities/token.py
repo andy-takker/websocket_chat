@@ -12,3 +12,8 @@ class TokenPair:
 class TokenPayload:
     user_id: UUID
     device_id: UUID
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class RefreshIn:
+    refresh_token: str

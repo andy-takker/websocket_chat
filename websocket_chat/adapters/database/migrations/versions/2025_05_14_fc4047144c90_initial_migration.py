@@ -23,7 +23,7 @@ def upgrade() -> None:
         "users",
         sa.Column("name", sa.String(length=128), nullable=False),
         sa.Column("email", sa.String(length=255), nullable=False),
-        sa.Column("password_hash", sa.String(length=255), nullable=False),
+        sa.Column("hashed_password", sa.String(length=255), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),

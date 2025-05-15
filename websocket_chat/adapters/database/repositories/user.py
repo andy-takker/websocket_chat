@@ -16,17 +16,27 @@ class PGUserRepository(IUserRepository):
         return self.__uow.session
 
     async def fetch_user_by_email(self, *, email: str) -> User | None:
-        stmt = select(UserTable).where(UserTable.email == email)
+        stmt = select(UserTable).where(UserTable.email == email.lower())
         result = await self.__session.scalar(stmt)
         if result is None:
             return None
-        return User(id=result.id, name=result.name, email=result.email)
+        return User(
+            id=result.id,
+            name=result.name,
+            email=result.email,
+            hashed_password=result.hashed_password,
+        )
 
     async def create_user(self, *, name: str, email: str, hashed_password: str) -> User:
         stmt = (
             insert(UserTable)
-            .values(name=name, email=email, password_hash=hashed_password)
+            .values(name=name, email=email.lower(), hashed_password=hashed_password)
             .returning(UserTable)
         )
         result = (await self.__session.scalars(stmt)).one()
-        return User(id=result.id, name=result.name, email=result.email)
+        return User(
+            id=result.id,
+            name=result.name,
+            email=result.email,
+            hashed_password=result.hashed_password,
+        )

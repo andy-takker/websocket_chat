@@ -5,7 +5,10 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from websocket_chat.adapters.database.config import DatabaseConfig
-from websocket_chat.adapters.database.repositories.user_repository import (
+from websocket_chat.adapters.database.repositories.chat import PGChatRepository
+from websocket_chat.adapters.database.repositories.device import PGDeviceRepository
+from websocket_chat.adapters.database.repositories.message import PGMessageRepository
+from websocket_chat.adapters.database.repositories.user import (
     PGUserRepository,
 )
 from websocket_chat.adapters.database.uow import SqlalchemyUow
@@ -16,6 +19,9 @@ from websocket_chat.adapters.redis_refresh_token_storage import (
     RedisConfig,
     RedisRefreshTokenStorage,
 )
+from websocket_chat.domain.interfaces.chat_repository import IChatRepository
+from websocket_chat.domain.interfaces.device_repository import IDeviceRepository
+from websocket_chat.domain.interfaces.message_repository import IMessageRepository
 from websocket_chat.domain.interfaces.password_manager import IPasswordManager
 from websocket_chat.domain.interfaces.refresh_token_storage import IRefreshTokenStorage
 from websocket_chat.domain.interfaces.token_manager import ITokenManager
@@ -91,3 +97,21 @@ class AdaptersProvider(Provider):
         self, uow: SqlalchemyUow
     ) -> AnyOf[IUserRepository, PGUserRepository]:
         return PGUserRepository(uow=uow)
+
+    @provide(scope=Scope.REQUEST)
+    def device_repository(
+        self, uow: SqlalchemyUow
+    ) -> AnyOf[IDeviceRepository, PGDeviceRepository]:
+        return PGDeviceRepository(uow=uow)
+
+    @provide(scope=Scope.REQUEST)
+    def chat_repository(
+        self, uow: SqlalchemyUow
+    ) -> AnyOf[IChatRepository, PGChatRepository]:
+        return PGChatRepository(uow=uow)
+
+    @provide(scope=Scope.REQUEST)
+    def message_repository(
+        self, uow: SqlalchemyUow
+    ) -> AnyOf[IMessageRepository, PGMessageRepository]:
+        return PGMessageRepository(uow=uow)

@@ -7,3 +7,8 @@ services:
       - POSTGRES_DB=$APP_DATABASE_NAME
       - POSTGRES_USER=$APP_DATABASE_USER
       - POSTGRES_PASSWORD=$APP_DATABASE_PASSWORD
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

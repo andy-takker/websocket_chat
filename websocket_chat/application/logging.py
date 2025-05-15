@@ -52,12 +52,9 @@ def setup_logging(log_level: LogLevel = LogLevel.INFO, use_json: bool = False) -
     root_logger.addHandler(handler)
     root_logger.setLevel(log_level.upper())
 
-    for _log in ["uvicorn", "uvicorn.error", "faststream", "pytest"]:
+    for _log in ["uvicorn", "uvicorn.access", "uvicorn.error", "faststream", "pytest"]:
         logging.getLogger(_log).handlers.clear()
         logging.getLogger(_log).propagate = True
-
-    logging.getLogger("uvicorn.access").handlers.clear()
-    logging.getLogger("uvicorn.access").propagate = False
 
     def handle_exception(
         exc_type: type[BaseException],

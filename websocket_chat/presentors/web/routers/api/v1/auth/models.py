@@ -13,3 +13,13 @@ class UserRegisterModel(BaseModel):
 class TokenPairModel(BaseModel):
     access_token: str
     refresh_token: str
+
+
+class LoginUserModel(BaseModel):
+    email: EmailStr
+    password: str
+    device_id: UUID
+
+
+class RefreshInModel(BaseModel):
+    refresh_token: str

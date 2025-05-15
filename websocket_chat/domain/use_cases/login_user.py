@@ -1,7 +1,10 @@
-from websocket_chat.application.errors import UserAlreadyExistsException
+from websocket_chat.application.errors import (
+    IncorrectCredentialsException,
+    ObjectNotFoundException,
+)
 from websocket_chat.application.use_case import IUseCase
 from websocket_chat.domain.entities.token import TokenPair, TokenPayload
-from websocket_chat.domain.entities.user import UserRegister
+from websocket_chat.domain.entities.user import LoginUser
 from websocket_chat.domain.interfaces.device_repository import IDeviceRepository
 from websocket_chat.domain.interfaces.password_manager import IPasswordManager
 from websocket_chat.domain.interfaces.refresh_token_storage import IRefreshTokenStorage
@@ -10,13 +13,7 @@ from websocket_chat.domain.interfaces.user_repository import IUserRepository
 from websocket_chat.domain.uow import AbstractUow
 
 
-class RegisterUserUseCase(IUseCase[UserRegister, TokenPair]):
-    __user_repository: IUserRepository
-    __password_manager: IPasswordManager
-    __token_manager: ITokenManager
-    __refresh_token_storage: IRefreshTokenStorage
-    __uow: AbstractUow
-
+class LoginUserUseCase(IUseCase[LoginUser, TokenPair]):
     def __init__(
         self,
         user_repository: IUserRepository,
@@ -33,23 +30,22 @@ class RegisterUserUseCase(IUseCase[UserRegister, TokenPair]):
         self.__refresh_token_storage = refresh_token_storage
         self.__uow = uow
 
-    async def execute(self, input_dto: UserRegister) -> TokenPair:
+    async def execute(self, input_dto: LoginUser) -> TokenPair:
         async with self.__uow:
             user = await self.__user_repository.fetch_user_by_email(
                 email=input_dto.email
             )
-            if user is not None:
-                raise UserAlreadyExistsException(
-                    message=f"User with email {input_dto.email} already exists"
+            if user is None:
+                raise ObjectNotFoundException(
+                    message=f"User with email {input_dto.email} not found"
                 )
 
-            user = await self.__user_repository.create_user(
-                name=input_dto.name,
-                email=input_dto.email,
-                hashed_password=self.__password_manager.hash_password(
-                    password=input_dto.password
-                ),
-            )
+            if not self.__password_manager.verify_password(
+                plain_password=input_dto.password, hashed_password=user.hashed_password
+            ):
+                raise IncorrectCredentialsException(
+                    message="Incorrect email or password"
+                )
 
             await self.__device_repository.create_or_update_device(
                 device_id=input_dto.device_id,

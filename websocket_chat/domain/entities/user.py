@@ -15,3 +15,11 @@ class User:
     id: UUID
     name: str
     email: str
+    hashed_password: str
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class LoginUser:
+    email: str
+    password: str
+    device_id: UUID
