@@ -6,6 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from websocket_chat.adapters.database.config import DatabaseConfig
 from websocket_chat.adapters.database.repositories.chat import PGChatRepository
+from websocket_chat.adapters.database.repositories.chat_participant import (
+    PGChatParticipantRepository,
+)
 from websocket_chat.adapters.database.repositories.device import PGDeviceRepository
 from websocket_chat.adapters.database.repositories.message import PGMessageRepository
 from websocket_chat.adapters.database.repositories.user import (
@@ -18,6 +21,9 @@ from websocket_chat.adapters.password_manager import PasswordManager
 from websocket_chat.adapters.redis_refresh_token_storage import (
     RedisConfig,
     RedisRefreshTokenStorage,
+)
+from websocket_chat.domain.interfaces.chat_participant_repository import (
+    IChatParticipantRepository,
 )
 from websocket_chat.domain.interfaces.chat_repository import IChatRepository
 from websocket_chat.domain.interfaces.device_repository import IDeviceRepository
@@ -109,6 +115,12 @@ class AdaptersProvider(Provider):
         self, uow: SqlalchemyUow
     ) -> AnyOf[IChatRepository, PGChatRepository]:
         return PGChatRepository(uow=uow)
+
+    @provide(scope=Scope.REQUEST)
+    def chat_participant_repository(
+        self, uow: SqlalchemyUow
+    ) -> AnyOf[IChatParticipantRepository, PGChatParticipantRepository]:
+        return PGChatParticipantRepository(uow=uow)
 
     @provide(scope=Scope.REQUEST)
     def message_repository(

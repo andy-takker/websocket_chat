@@ -1,5 +1,8 @@
 from dishka import Provider, Scope, provide
 
+from websocket_chat.domain.interfaces.chat_participant_repository import (
+    IChatParticipantRepository,
+)
 from websocket_chat.domain.interfaces.chat_repository import IChatRepository
 from websocket_chat.domain.interfaces.device_repository import IDeviceRepository
 from websocket_chat.domain.interfaces.message_repository import IMessageRepository
@@ -68,9 +71,15 @@ class DomainProvider(Provider):
         uow: AbstractUow,
         chat_repository: IChatRepository,
         message_repository: IMessageRepository,
+        token_manager: ITokenManager,
+        user_repository: IUserRepository,
+        chat_participant_repository: IChatParticipantRepository,
     ) -> FetchChatHistoryUseCase:
         return FetchChatHistoryUseCase(
             uow=uow,
             chat_repository=chat_repository,
             message_repository=message_repository,
+            token_manager=token_manager,
+            user_repository=user_repository,
+            chat_participant_repository=chat_participant_repository,
         )

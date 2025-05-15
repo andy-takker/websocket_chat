@@ -1,6 +1,6 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserRegisterModel(BaseModel):
@@ -11,6 +11,8 @@ class UserRegisterModel(BaseModel):
 
 
 class TokenPairModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     access_token: str
     refresh_token: str
 
@@ -18,7 +20,7 @@ class TokenPairModel(BaseModel):
 class LoginUserModel(BaseModel):
     email: EmailStr
     password: str
-    device_id: UUID
+    device_id: UUID = Field(default_factory=uuid4)
 
 
 class RefreshInModel(BaseModel):

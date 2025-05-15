@@ -6,6 +6,7 @@ from uuid import UUID
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class FetchChatHistory:
+    access_token: str
     chat_id: UUID
     limit: int
     offset: int

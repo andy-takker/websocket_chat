@@ -24,3 +24,7 @@ class RefreshTokenNotFoundException(WebsockerChatException):
 
 class ObjectNotFoundException(RepositoryException):
     pass
+
+
+class ForbiddenException(WebsockerChatException):
+    pass

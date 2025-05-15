@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +19,18 @@ class PGUserRepository(IUserRepository):
 
     async def fetch_user_by_email(self, *, email: str) -> User | None:
         stmt = select(UserTable).where(UserTable.email == email.lower())
+        result = await self.__session.scalar(stmt)
+        if result is None:
+            return None
+        return User(
+            id=result.id,
+            name=result.name,
+            email=result.email,
+            hashed_password=result.hashed_password,
+        )
+
+    async def fetch_user_by_id(self, *, user_id: UUID) -> User | None:
+        stmt = select(UserTable).where(UserTable.id == user_id)
         result = await self.__session.scalar(stmt)
         if result is None:
             return None

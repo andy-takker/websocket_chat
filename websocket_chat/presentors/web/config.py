@@ -10,11 +10,11 @@ from websocket_chat.application.logging import LoggingConfig
 @dataclass(frozen=True, kw_only=True, slots=True)
 class AppConfig:
     title: str = field(
-        default_factory=lambda: environ.get("APP_TITLE", "Exchange Servcie")
+        default_factory=lambda: environ.get("APP_TITLE", "Websocket Chat")
     )
     description: str = field(
         default_factory=lambda: environ.get(
-            "APP_DESCRIPTION", "REST API for history exchange rates and wallets"
+            "APP_DESCRIPTION", "Typical websocket chat for async messages"
         )
     )
     version: str = field(default_factory=lambda: environ.get("APP_VERSION", "1.0.0"))
