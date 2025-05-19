@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from os import environ
 
 from websocket_chat.adapters.database.config import DatabaseConfig
-from websocket_chat.adapters.jwt_token_manager import JWTConfig
+from websocket_chat.adapters.jwt_token_service import JWTConfig
 from websocket_chat.adapters.redis_refresh_token_storage import RedisConfig
 from websocket_chat.application.logging import LoggingConfig
 

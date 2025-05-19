@@ -1,7 +1,7 @@
 import pytest
 from redis.asyncio import Redis
 
-from websocket_chat.adapters.jwt_token_manager import JWTConfig
+from websocket_chat.adapters.jwt_token_service import JWTConfig
 from websocket_chat.adapters.redis_refresh_token_storage import (
     RedisRefreshTokenStorage,
 )

@@ -1,6 +1,6 @@
 import pytest
 
-from websocket_chat.adapters.jwt_token_manager import JWTConfig, JWTTokenService
+from websocket_chat.adapters.jwt_token_service import JWTConfig, JWTTokenService
 
 
 @pytest.fixture

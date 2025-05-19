@@ -4,7 +4,7 @@ import pytest
 from dirty_equals import IsPartialDict
 from jose import JWTError, jwt
 
-from websocket_chat.adapters.jwt_token_manager import JWTConfig, JWTTokenService, Scopes
+from websocket_chat.adapters.jwt_token_service import JWTConfig, JWTTokenService, Scopes
 from websocket_chat.domain.entities.token import TokenPayload
 
 
@@ -89,3 +89,31 @@ async def test_verify_access_token__error(
 
     with pytest.raises(JWTError):
         await jwt_token_service.verify_access_token(token=access_token)
+
+
+async def test_verify_refresh_token__success(
+    jwt_token_service: JWTTokenService,
+):
+    user_id = UUID(int=1)
+    device_id = UUID(int=1)
+    token_payload = TokenPayload(
+        user_id=user_id,
+        device_id=device_id,
+    )
+    refresh_token = await jwt_token_service.create_refresh_token(
+        token_payload=token_payload
+    )
+
+    assert (
+        await jwt_token_service.verify_refresh_token(token=refresh_token)
+        == token_payload
+    )
+
+
+async def test_verify_refresh_token__error(
+    jwt_token_service: JWTTokenService,
+):
+    refresh_token = "token"
+
+    with pytest.raises(JWTError):
+        await jwt_token_service.verify_refresh_token(token=refresh_token)

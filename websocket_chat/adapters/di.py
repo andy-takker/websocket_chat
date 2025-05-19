@@ -16,7 +16,7 @@ from websocket_chat.adapters.database.repositories.user import (
 )
 from websocket_chat.adapters.database.uow import SqlalchemyUow
 from websocket_chat.adapters.database.utils import create_engine, create_sessionmaker
-from websocket_chat.adapters.jwt_token_manager import JWTConfig, JWTTokenService
+from websocket_chat.adapters.jwt_token_service import JWTConfig, JWTTokenService
 from websocket_chat.adapters.password_manager import PasswordManager
 from websocket_chat.adapters.redis_refresh_token_storage import (
     RedisConfig,
