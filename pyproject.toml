@@ -21,6 +21,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "coverage>=7.8.0",
+    "dirty-equals>=0.9.0",
     "mypy>=1.15.0",
     "polyfactory>=2.21.0",
     "pre-commit>=4.2.0",

@@ -1,6 +1,7 @@
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from enum import StrEnum, unique
 from os import environ
 from typing import Any
 from uuid import UUID
@@ -9,6 +10,12 @@ from jose import JWTError, jwt
 
 from websocket_chat.domain.entities.token import TokenPayload
 from websocket_chat.domain.interfaces.token_service import ITokenService
+
+
+@unique
+class Scopes(StrEnum):
+    ACCESS = "access"
+    REFRESH = "refresh"
 
 
 class JWTTokenService(ITokenService):
@@ -28,7 +35,7 @@ class JWTTokenService(ITokenService):
         payload = {
             "sub": str(token_payload.user_id),
             "did": str(token_payload.device_id),
-            "scope": "access",
+            "scope": Scopes.ACCESS,
         }
         return self._encode(payload, self.__access_token_expires_seconds)
 
@@ -36,13 +43,13 @@ class JWTTokenService(ITokenService):
         payload = {
             "sub": str(token_payload.user_id),
             "did": str(token_payload.device_id),
-            "scope": "refresh",
+            "scope": Scopes.REFRESH,
         }
         return self._encode(payload, self.__refresh_token_expires_seconds)
 
     async def verify_access_token(self, *, token: str) -> TokenPayload:
         payload = self._decode(token)
-        if payload.get("scope") != "access":
+        if payload.get("scope") != Scopes.ACCESS:
             raise JWTError("Expected access token")
         return TokenPayload(
             user_id=UUID(payload["sub"]),
@@ -51,7 +58,7 @@ class JWTTokenService(ITokenService):
 
     async def verify_refresh_token(self, *, token: str) -> TokenPayload:
         payload = self._decode(token)
-        if payload.get("scope") != "refresh":
+        if payload.get("scope") != Scopes.REFRESH:
             raise JWTError("Expected refresh token")
         return TokenPayload(
             user_id=UUID(payload["sub"]),
