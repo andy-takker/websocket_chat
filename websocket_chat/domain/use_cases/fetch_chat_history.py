@@ -9,10 +9,10 @@ from websocket_chat.domain.interfaces.chat_participant_repository import (
 )
 from websocket_chat.domain.interfaces.chat_repository import IChatRepository
 from websocket_chat.domain.interfaces.message_repository import IMessageRepository
-from websocket_chat.domain.interfaces.token_manager import ITokenManager
+from websocket_chat.domain.interfaces.token_service import ITokenService
 from websocket_chat.domain.interfaces.user_repository import IUserRepository
 from websocket_chat.domain.uow import AbstractUow
-from websocket_chat.domain.use_cases.mixins import AuthorizeMixin
+from websocket_chat.domain.use_cases.mixins.authorize_mixin import AuthorizeMixin
 
 
 class FetchChatHistoryUseCase(AuthorizeMixin, IUseCase[FetchChatHistory, ChatHistory]):
@@ -23,13 +23,13 @@ class FetchChatHistoryUseCase(AuthorizeMixin, IUseCase[FetchChatHistory, ChatHis
         user_repository: IUserRepository,
         chat_participant_repository: IChatParticipantRepository,
         message_repository: IMessageRepository,
-        token_manager: ITokenManager,
+        token_service: ITokenService,
     ):
         self._uow = uow
         self._chat_repository = chat_repository
         self._chat_participant_repository = chat_participant_repository
         self._message_repository = message_repository
-        self._token_manager = token_manager
+        self._token_service = token_service
         self._user_repository = user_repository
 
     async def execute(self, input_dto: FetchChatHistory) -> ChatHistory:

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from websocket_chat.domain.entities.token import TokenPayload
 
 
-class ITokenManager(ABC):
+class ITokenService(ABC):
     @abstractmethod
     async def create_access_token(self, *, token_payload: TokenPayload) -> str: ...
 

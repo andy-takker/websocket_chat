@@ -8,7 +8,7 @@ from websocket_chat.domain.interfaces.device_repository import IDeviceRepository
 from websocket_chat.domain.interfaces.message_repository import IMessageRepository
 from websocket_chat.domain.interfaces.password_manager import IPasswordManager
 from websocket_chat.domain.interfaces.refresh_token_storage import IRefreshTokenStorage
-from websocket_chat.domain.interfaces.token_manager import ITokenManager
+from websocket_chat.domain.interfaces.token_service import ITokenService
 from websocket_chat.domain.interfaces.user_repository import IUserRepository
 from websocket_chat.domain.uow import AbstractUow
 from websocket_chat.domain.use_cases.chat_authorize import ChatAuthorizeUseCase
@@ -25,7 +25,7 @@ class DomainProvider(Provider):
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
         password_manager: IPasswordManager,
-        token_manager: ITokenManager,
+        token_service: ITokenService,
         refresh_token_storage: IRefreshTokenStorage,
         uow: AbstractUow,
     ) -> RegisterUserUseCase:
@@ -33,7 +33,7 @@ class DomainProvider(Provider):
             user_repository=user_repository,
             device_repository=device_repository,
             password_manager=password_manager,
-            token_manager=token_manager,
+            token_service=token_service,
             refresh_token_storage=refresh_token_storage,
             uow=uow,
         )
@@ -44,7 +44,7 @@ class DomainProvider(Provider):
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
         password_manager: IPasswordManager,
-        token_manager: ITokenManager,
+        token_service: ITokenService,
         refresh_token_storage: IRefreshTokenStorage,
         uow: AbstractUow,
     ) -> LoginUserUseCase:
@@ -52,17 +52,17 @@ class DomainProvider(Provider):
             user_repository=user_repository,
             device_repository=device_repository,
             password_manager=password_manager,
-            token_manager=token_manager,
+            token_service=token_service,
             refresh_token_storage=refresh_token_storage,
             uow=uow,
         )
 
     @provide(scope=Scope.REQUEST)
     def refresh_token(
-        self, token_manager: ITokenManager, refresh_token_storage: IRefreshTokenStorage
+        self, token_service: ITokenService, refresh_token_storage: IRefreshTokenStorage
     ) -> RefreshTokenUseCase:
         return RefreshTokenUseCase(
-            token_manager=token_manager,
+            token_service=token_service,
             refresh_token_storage=refresh_token_storage,
         )
 
@@ -72,7 +72,7 @@ class DomainProvider(Provider):
         uow: AbstractUow,
         chat_repository: IChatRepository,
         message_repository: IMessageRepository,
-        token_manager: ITokenManager,
+        token_service: ITokenService,
         user_repository: IUserRepository,
         chat_participant_repository: IChatParticipantRepository,
     ) -> FetchChatHistoryUseCase:
@@ -80,7 +80,7 @@ class DomainProvider(Provider):
             uow=uow,
             chat_repository=chat_repository,
             message_repository=message_repository,
-            token_manager=token_manager,
+            token_service=token_service,
             user_repository=user_repository,
             chat_participant_repository=chat_participant_repository,
         )
@@ -88,12 +88,12 @@ class DomainProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def chat_authorize(
         self,
-        token_manager: ITokenManager,
+        token_service: ITokenService,
         uow: AbstractUow,
         user_repository: IUserRepository,
     ) -> ChatAuthorizeUseCase:
         return ChatAuthorizeUseCase(
             uow=uow,
-            token_manager=token_manager,
+            token_service=token_service,
             user_repository=user_repository,
         )

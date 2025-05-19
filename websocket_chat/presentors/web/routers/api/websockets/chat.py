@@ -2,7 +2,7 @@ import logging
 from uuid import UUID
 
 from dishka import AsyncContainer, FromDishka
-from dishka.integrations.fastapi import DishkaRoute
+from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from websocket_chat.domain.entities.chat import ReadMessageDTO, SaveMessageDTO
@@ -13,10 +13,11 @@ from websocket_chat.presentors.web.websocket_manager import WebsocketManager
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/chat/", route_class=DishkaRoute)
+router = APIRouter(prefix="/chat")
 
 
 @router.websocket("/{chat_id}")
+@inject
 async def chat_ws(
     chat_id: UUID,
     ws: WebSocket,

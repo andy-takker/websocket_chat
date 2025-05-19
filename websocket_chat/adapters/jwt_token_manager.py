@@ -8,10 +8,10 @@ from uuid import UUID
 from jose import JWTError, jwt
 
 from websocket_chat.domain.entities.token import TokenPayload
-from websocket_chat.domain.interfaces.token_manager import ITokenManager
+from websocket_chat.domain.interfaces.token_service import ITokenService
 
 
-class JWTTokenManager(ITokenManager):
+class JWTTokenService(ITokenService):
     def __init__(
         self,
         secret_key: str,

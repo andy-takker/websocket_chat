@@ -16,7 +16,7 @@ from websocket_chat.adapters.database.repositories.user import (
 )
 from websocket_chat.adapters.database.uow import SqlalchemyUow
 from websocket_chat.adapters.database.utils import create_engine, create_sessionmaker
-from websocket_chat.adapters.jwt_token_manager import JWTConfig, JWTTokenManager
+from websocket_chat.adapters.jwt_token_manager import JWTConfig, JWTTokenService
 from websocket_chat.adapters.password_manager import PasswordManager
 from websocket_chat.adapters.redis_refresh_token_storage import (
     RedisConfig,
@@ -30,7 +30,7 @@ from websocket_chat.domain.interfaces.device_repository import IDeviceRepository
 from websocket_chat.domain.interfaces.message_repository import IMessageRepository
 from websocket_chat.domain.interfaces.password_manager import IPasswordManager
 from websocket_chat.domain.interfaces.refresh_token_storage import IRefreshTokenStorage
-from websocket_chat.domain.interfaces.token_manager import ITokenManager
+from websocket_chat.domain.interfaces.token_service import ITokenService
 from websocket_chat.domain.interfaces.user_repository import IUserRepository
 from websocket_chat.domain.uow import AbstractUow
 
@@ -56,8 +56,8 @@ class AdaptersProvider(Provider):
         return PasswordManager()
 
     @provide(scope=Scope.APP)
-    def jwt_token_manager(self) -> ITokenManager:
-        return JWTTokenManager(
+    def jwt_token_service(self) -> ITokenService:
+        return JWTTokenService(
             secret_key=self.__jwt_config.secret_key,
             algorithm=self.__jwt_config.algorithm,
             access_token_expires_seconds=self.__jwt_config.access_token_expires_seconds,
@@ -71,9 +71,12 @@ class AdaptersProvider(Provider):
         await redis.aclose(close_connection_pool=True)
 
     @provide(scope=Scope.APP)
-    def redis_refresh_token_storage(self, redis: Redis) -> IRefreshTokenStorage:
+    def redis_refresh_token_storage(
+        self, redis: Redis, token_service: ITokenService
+    ) -> IRefreshTokenStorage:
         return RedisRefreshTokenStorage(
             redis=redis,
+            token_service=token_service,
             ttl=self.__jwt_config.refresh_token_expires_seconds,
         )
 
